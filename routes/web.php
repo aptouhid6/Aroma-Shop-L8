@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,3 +25,4 @@ Route::get('admin/blogs',function (){
     return view('admin.blog');
 });
 Route::resource('admin/category', CategoryController::class);
+Route::resource('admin/product', ProductController::class);
