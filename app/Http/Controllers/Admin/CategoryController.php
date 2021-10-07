@@ -58,6 +58,7 @@ class CategoryController extends Controller
             $category->image = $image_path;
         }
         $category->save();
+        session()->flash('success','Category created successfully');
         return redirect()->route('category.index');
     }
 
@@ -117,6 +118,7 @@ class CategoryController extends Controller
             $category->image = $image_path;
         }
         $category->save();
+        session()->flash('success','Category updated successfully');
         return redirect()->route('category.index');
     }
 
@@ -136,6 +138,7 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         Category::destroy($id);
+        session()->flash('success','Category deleted successfully');
         return redirect()->route('category.index');
     }
 }
