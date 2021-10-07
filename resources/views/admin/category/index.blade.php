@@ -54,9 +54,10 @@
                       </tr>
                     </thead>
                     <tbody>
-                      @foreach($categories as $category)
+                      @foreach($categories as $key=>$category)
                       <tr>
-                        <td>{{ $category->id }}</td>
+                        <td>{{ $categories->firstItem() + $key }}</td>
+                        {{-- <td>{{ $category->id }}</td> --}}
                         <td>{{ $category->name }}</td>
                         <td>{{ $category->description }}</td>
                         <td>
@@ -76,6 +77,7 @@
                       @endforeach
                     </tbody>
                   </table>
+                  {{ $categories->render() }}
                 </div>
                 <!-- /.card-body -->
               </div>
