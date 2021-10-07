@@ -21,7 +21,7 @@ class CreateProductsTable extends Migration
             $table->string('color',100)->nullable();
             $table->string('size',100)->nullable();
             $table->text('description',100)->nullable();
-            $table->float('ptice',9,2);
+            $table->float('price',9,2);
             $table->integer('stock')->default(0);
             $table->tinyInteger('is_featured')->default('0');
             $table->text('image')->nullable();

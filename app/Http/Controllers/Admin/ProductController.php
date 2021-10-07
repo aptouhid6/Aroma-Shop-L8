@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $data['title'] = 'List of product';
+        $data['products'] = Product::with('category')->orderBy('id','DESC')->paginate(5);
+        return view('admin.product.index',$data);
     }
 
     /**
@@ -25,7 +28,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $data['title'] = 'Create new Product';
+        $data['categories'] = Category::all();
+        return view('admin.product.create',$data);
+
     }
 
     /**
@@ -36,7 +42,33 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+           'category_id' => 'required',
+           'name' => 'required',
+           'price' => 'required',
+           'status' => 'required',
+           'image' => 'mimes:jpeg,png',
+        ]);
+        $product = new Product();
+        $product->category_id = $request->category_id;
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->color = $request->color;
+        $product->size = $request->size;
+        $product->price = $request->price;
+        $product->status = $request->status;
+        $product->stock = $request->stock;
+        if($request->has('is_featured')){
+           $product->is_featured = $request->is_featured;
+        }
+
+        if($request->hasFile('image')){
+            $image_path = $this->fileUpload($request->file('image'));
+            $product->image = $image_path;
+        }
+        $product->save();
+        session()->flash('success','Product created successfully');
+        return redirect()->route('product.index');
     }
 
     /**
@@ -58,7 +90,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $data['title'] = 'Edit product';
+        $data['categories'] = Category::all();
+        $data['product'] = $product;
+        return view('admin.product.edit',$data);
     }
 
     /**
@@ -70,7 +105,45 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'category_id' => 'required',
+            'name' => 'required',
+            'price' => 'required',
+            'status' => 'required',
+            'image' => 'mimes:jpeg,png',
+        ]);
+
+        $product = new Product();
+        $product->category_id = $request->category_id;
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->color = $request->color;
+        $product->size = $request->size;
+        $product->price = $request->price;
+        $product->status = $request->status;
+        $product->stock = $request->stock;
+        if($request->has('is_featured')){
+            $product->is_featured = $request->is_featured;
+        }else{
+            $product->is_featured = 0;
+        }
+
+        if($request->hasFile('image')){
+            $image_path = $this->fileUpload($request->file('image'));
+            if($product->image != null && file_exists($product->image)){
+                unlink($product->image);
+            }
+            $product->image = $image_path;
+        }
+        $product->save();
+        session()->flash('success','Product updated successfully');
+        return redirect()->route('product.index');
+    }
+    private function fileUpload($img){
+        $path = 'images/product';
+        $file_name = rand(0000,9999).'_'.$img->getFilename().'.'.$img->getClientOriginalExtension();
+        $img->move($path,$file_name);
+        return $path.'/'.$file_name;
     }
 
     /**
@@ -81,6 +154,11 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        if($product->image != null && file_exists($product->image)){
+            unlink($product->image);
+        }
+        $product->delete();
+        session()->flash('success','Product deleted successfully');
+        return redirect()->route('product.index');
     }
 }
